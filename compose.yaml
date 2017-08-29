@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+  varnish:
+    image: "full-install"  
+    ports:
+     - "1080:80"
+    environment:
+     - SINGLE=varnish
+     - VARNISH_OPTS=-n /var/lib/varnish -T :6082
+    volumes:
+     - workdir:/var/lib/varnish
+  hitch:
+    image: "full-install"
+    ports:
+     - "1443:443"
+    environment:
+     - SINGLE=hitch
+     - HITCH_OPTS=
+  agent:
+    image: "full-install"
+    ports:
+     - "1085:6085"
+    environment:
+     - SINGLE=agent
+     - AGENT_OPTS=-n /var/lib/varnish -T varnish:6082
+     - STAT_OPTS=-n /var/lib/varnish
+    volumes:
+     - workdir:/var/lib/varnish
+
+
+volumes:
+  workdir:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
